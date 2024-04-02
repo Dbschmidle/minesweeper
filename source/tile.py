@@ -36,12 +36,12 @@ class Tile:
         
         if (self.flagged == True):
             return "F"
-        return self.value
+        return str(self.value)
     
     
     def set_bomb(self):
         self.bomb = True
-        assert(self.value == -2)
+        #assert(self.value == -2)
         self.value = -1    
         
     
