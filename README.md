@@ -1,7 +1,10 @@
 # Minesweeper
  Personal project to play minesweeper in python
 
-## Installation
- pip install for the GUI (PyQt5)
+## Credit
+ Project idea inspiration and pygame design: Daniel Chang
 
- `pip install PyQt5`
+## Installation
+ pip install for the GUI (pygame)
+
+ `pip install pygame`

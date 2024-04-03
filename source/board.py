@@ -101,3 +101,6 @@ class Board():
                         bcount += 1
             
             return bcount
+        
+    def get_board(self):
+        return self.board
