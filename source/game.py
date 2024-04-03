@@ -25,6 +25,11 @@ class Game:
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT):
                     running = False
+                if (event.type == pygame.MOUSEBUTTONDOWN):
+                    # get state of mouse buttons 
+                    rightclick = pygame.mouse.get_pressed(num_buttons=3)[2]    
+                    self.handle_click(pygame.mouse.get_pos(), rightclick)
+            
             self.screen.fill("white")
             self.draw()
             pygame.display.flip()
@@ -33,13 +38,17 @@ class Game:
         
         
     def draw(self):
+        """
+        Draw the current board.
+        """
+        
         # coordinates to place tiles on screen
         cords = (0, 0)
         
         for row in self.board.get_board():
             for tle in row:
                 rect = pygame.Rect(cords, self.tileSize)
-                image = self.images["empty-block"]
+                image = self.find_image(tle)
                 self.screen.blit(image, cords)
                 cords = cords[0] + self.tileSize[0], cords[1]
                 
@@ -61,3 +70,43 @@ class Game:
             
         print(self.images)
             
+            
+    def find_image(self, tile):
+        """
+        Return the image associated with the tile from self.images
+        """
+        tilestr = str(tile)
+        if (tilestr == "B"):
+            return self.images["bomb-at-clicked-block"]
+
+        if (tile.flagged == True):
+            return self.images["flag"]
+
+        if (tile.visible == False):
+            # tile not visible to user yet
+            return self.images["empty-block"]
+            
+        
+        # return the number
+        return self.images[tilestr]
+        
+        
+    def handle_click(self, pos, rightclick):
+        """
+        Converts position into index on board.
+        If rightclick is true, set the tile to a flag 
+        """
+        index = ( pos[1] // self.tileSize[1], pos[0] // self.tileSize[0] )
+        
+        if (rightclick):
+            tile = self.board.get_tile(index)
+            
+            if (tile.flagged == True):
+                # tile already flagged, unflag it
+                self.board.unflag_tile(tile)
+            else:
+                self.board.flag_tile(tile)
+        
+        print(index)
+        
+        

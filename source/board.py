@@ -104,3 +104,21 @@ class Board():
         
     def get_board(self):
         return self.board
+    
+    def get_tile(self, index):
+        """
+        Returns the tile at index (x, y)
+        """
+        if (index[0] >= self.width or index[0] < 0):
+            return
+        if (index[1] >= self.height or index[1] < 0):
+            return
+        
+        return self.board[index[0]][index[1]]
+        
+    
+    def flag_tile(self, tile):
+        tile.flagged = True
+    
+    def unflag_tile(self, tile):
+        tile.flagged = False
