@@ -13,7 +13,7 @@ These values must be calculated after bomb initalization by the game engine.
 """
 
 class Tile:
-    def __init__(self, value):
+    def __init__(self, value, tilepos):
         
         # we trust that the value argument is correct
         self.value = value
@@ -23,6 +23,9 @@ class Tile:
         self.flagged = False
         
         self.bomb = False
+        
+        # tile position on the board (x, y)
+        self.pos = tilepos
     
 
     def __str__(self):

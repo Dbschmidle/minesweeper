@@ -16,6 +16,7 @@ class Game:
         self.tileSize = (500 // self.board.height, 500 // self.board.width)
         self.load_images()
         
+        self.first_click = False
     
         
     def start(self):
@@ -76,8 +77,6 @@ class Game:
         Return the image associated with the tile from self.images
         """
         tilestr = str(tile)
-        if (tilestr == "B"):
-            return self.images["bomb-at-clicked-block"]
 
         if (tile.flagged == True):
             return self.images["flag"]
@@ -85,8 +84,13 @@ class Game:
         if (tile.visible == False):
             # tile not visible to user yet
             return self.images["empty-block"]
-            
         
+        if (tilestr == "B"):
+            return self.images["bomb-at-clicked-block"]    
+        
+        if (tilestr == " "):
+            return self.images["0"]
+            
         # return the number
         return self.images[tilestr]
         
@@ -98,8 +102,13 @@ class Game:
         """
         index = ( pos[1] // self.tileSize[1], pos[0] // self.tileSize[0] )
         
+        tile = self.board.get_tile(index)
+        
         if (rightclick):
-            tile = self.board.get_tile(index)
+            
+            # user cannot flag visible tiles 
+            if (tile.visible == True):
+                return
             
             if (tile.flagged == True):
                 # tile already flagged, unflag it
@@ -107,6 +116,30 @@ class Game:
             else:
                 self.board.flag_tile(tile)
         
-        print(index)
-        
+        else:
+            # leftclick
+            if (tile.bomb == True):
+                
+                if(self.first_click == False):
+                    # user has not clicked, this cannot be a bomb
+                    # reset the board
+                    self.board = Board()
+                    return
+                
+                self.board.set_visible(tile)
+                self.game_lost()
+            
+            
+            self.first_click = True
+            
+            self.board.set_visible(tile)
+            self.board.propogate_visible(tile)
+            
+            
+    def game_lost(self):
+        # set all the bombs visible
+        for row in self.board.get_board():
+            for tle in row:
+                if (tle.bomb == True):
+                    self.board.set_visible(tle)
         

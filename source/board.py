@@ -9,14 +9,6 @@ class Board():
 
         return
     
-    def __str__(self):
-        for row in self.board:
-            for tle in row:                
-                print(tle, end=" ")
-            print()
-        return ""
-    
-    
     def init_board(self, n=9, m=9):
         """
         Fill an n x m board with mines. Default 9x9 board.
@@ -28,8 +20,8 @@ class Board():
         for i in range(n):
             row = []
             for j in range(m):
-                # initalize the tiles with value -2
-                row.append(Tile(-2))
+                # initalize the tiles with value -2 and position
+                row.append(Tile(-2, (i, j)))
         
             arr.append(row)        
         
@@ -56,7 +48,6 @@ class Board():
         mine_count = round ( ( len(arr) * len(arr[0]) ) / 15 )
         
         # populate the board with mines 
-        
         for row in arr:
             for tle in row:
                 if (random.randint(0, 100) <= 15):
@@ -122,3 +113,68 @@ class Board():
     
     def unflag_tile(self, tile):
         tile.flagged = False
+        
+        
+    def set_visible(self, tile):
+        """
+        Set the tile visible.             
+        """
+        tile.visible = True
+        
+        
+    def propogate_visible(self, tile):
+        """
+        In minesweeper, adjacent tiles to the one clicked will also become visible
+        if they are not a bomb.
+        """
+        
+        # check all adjacent tiles, if they are not a bomb, make them visible
+        adj_tiles = self.get_adjacent_tiles(tile)
+        
+        for adj_tile in adj_tiles:
+            if (adj_tile.bomb == False):
+                # set this tile visible and propogate new tile
+                if (adj_tile.visible == True):
+                    # skip if already visible
+                    continue
+                
+                self.set_visible(adj_tile)
+                self.propogate_visible(adj_tile)
+        
+        
+    def get_adjacent_tiles(self, tile):
+        """
+        Returns a list of all the adjacent tiles.
+        Adjacent tiles include diagonal tiles.
+        """
+        adj = []
+        tilepos = [tile.pos[0], tile.pos[1]]
+        for i in range(-1, 2, 1):
+            
+            tilepos[0] = tilepos[0] + i
+            
+            for j in range(-1, 2, 1):
+                if ( i == 0 and j == 0):
+                    # skip tile
+                    continue
+                
+                tilepos[1] = tilepos[1] + j
+                
+                if (self.index_in_scope(tilepos)):
+                    # tile in bounds
+                    adj.append(self.get_tile(tilepos))
+                    
+        return adj
+                    
+                
+
+    def index_in_scope(self, index):
+        """
+        Checks if a tuple index (x, y) is in the scope of the board
+        Returns a boolean value 
+        """
+        if (index[0] >= self.width or index[0] < 0):
+            return False
+        if (index[1] >= self.height or index[1] < 0):
+            return False
+        return True
