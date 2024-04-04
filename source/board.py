@@ -133,13 +133,16 @@ class Board():
         
         for adj_tile in adj_tiles:
             if (adj_tile.bomb == False):
-                # set this tile visible and propogate new tile
+                # set this tile visible
                 if (adj_tile.visible == True):
                     # skip if already visible
                     continue
                 
                 self.set_visible(adj_tile)
-                self.propogate_visible(adj_tile)
+                
+                # only propogate if the tile value is 0
+                if (adj_tile.value == 0):
+                    self.propogate_visible(adj_tile)
         
         
     def get_adjacent_tiles(self, tile):
@@ -148,9 +151,8 @@ class Board():
         Adjacent tiles include diagonal tiles.
         """
         adj = []
-        tilepos = [tile.pos[0], tile.pos[1]]
         for i in range(-1, 2, 1):
-            
+            tilepos = [tile.pos[0], tile.pos[1]]
             tilepos[0] = tilepos[0] + i
             
             for j in range(-1, 2, 1):
@@ -158,6 +160,7 @@ class Board():
                     # skip tile
                     continue
                 
+                tilepos[1] = tile.pos[1]
                 tilepos[1] = tilepos[1] + j
                 
                 if (self.index_in_scope(tilepos)):

@@ -23,6 +23,11 @@ class Game:
         running = True 
         
         while running: 
+            if (self.check_won()):
+                self.game_won()
+                print("you win!")
+                break
+                
             for event in pygame.event.get():
                 if (event.type == pygame.QUIT):
                     running = False
@@ -117,20 +122,25 @@ class Game:
                 self.board.flag_tile(tile)
         
         else:
+            if(self.first_click == False):
+                # user has not clicked, this must be a tile with value 0
+                if (tile.value != 0):
+                    # reset the board
+                    self.board = Board()
+                    
+                    # post a new event with the same mousebutton down 
+                    newevent = pygame.event.Event(pygame.MOUSEBUTTONDOWN)
+                    pygame.event.post(newevent)
+                    
+                    return
+                
+                self.first_click = True
+            
             # leftclick
             if (tile.bomb == True):
                 
-                if(self.first_click == False):
-                    # user has not clicked, this cannot be a bomb
-                    # reset the board
-                    self.board = Board()
-                    return
-                
                 self.board.set_visible(tile)
                 self.game_lost()
-            
-            
-            self.first_click = True
             
             self.board.set_visible(tile)
             self.board.propogate_visible(tile)
@@ -143,3 +153,26 @@ class Game:
                 if (tle.bomb == True):
                     self.board.set_visible(tle)
         
+        
+    def check_won(self):
+        """
+        Check if the user has flagged all bombs. 
+        And no tile is wrongly flagged
+        
+        O(n), n = boardsize
+        Returns a boolean.
+        """    
+        for row in self.board.get_board():
+            for tile in row:
+                if (tile.bomb == True):
+                    if (tile.flagged == False):
+                        return False
+                    
+                if (tile.bomb == False and tile.flagged == True):
+                    # tile wrongly flagged
+                    return False
+                
+        return True
+        
+    def game_won(self):
+        return
